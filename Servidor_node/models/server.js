@@ -35,14 +35,14 @@ class Server {
     }
 
     middlewares() {
-        // Directorio Público
-        this.app.use( express.static(path.resolve(__dirname, '../../ClienteReact/public')));
-
-        
+       
         // CORS
         this.app.use( cors() );
         // Lectura y parseo del body
         this.app.use( express.json() );
+         // Directorio Público
+         this.app.use( express.static('public') );
+        
         //session de la bd
         this.app.use(session({
             secret: 'msm',

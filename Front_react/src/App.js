@@ -17,7 +17,7 @@ function App() {
     // e.g. const net = await cocossd.load();
     // https://tensorflowjsrealtimemodel.s3.au-syd.cloud-object-storage.appdomain.cloud/model.json
     const net = await tf.loadGraphModel('https://andresmontano.website/tfjsmodel/model.json')
-    console.log("chupa pichi");
+    console.log("modelo cargado")
     //  Loop and detect hands
     setInterval(() => {
       detect(net);
@@ -90,6 +90,7 @@ function App() {
             width: 640,
             height: 480,
           }}
+          id="video"
         />
 
         <canvas
@@ -105,6 +106,7 @@ function App() {
             width: 640,
             height: 480,
           }}
+          id="cvideo"
         />
       </header>
     </div>

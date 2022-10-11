@@ -5,8 +5,6 @@ import numpy as np
 import imutils
 import easyocr
 from PIL import Image
-import urllib
-import requests
 
 from django.http.response import JsonResponse 
 import json
@@ -14,10 +12,8 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .forms import DocumentoForm
-from .models import Documento
-from rest_framework.parsers import FileUploadParser,MultiPartParser
-
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 class Upload(View):
     
@@ -25,26 +21,27 @@ class Upload(View):
     def dispatch(self, request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
 
-    def get(self,request):
+    def index(self,request):
+        img = cv2.imread('media/img/auto1.jpg')
+
+        if img is None:
+            return HttpResponse("none")
         return HttpResponse("index")
 
     def post(self,request):
-        
+
         formulario = DocumentoForm(request.POST,files=request.FILES)
         if formulario.is_valid():
             formulario.save()
 
-        img = cv2.imread('http://answers.opencv.org/upfiles/logo_2.png')
+        img = cv2.imread(settings.MEDIA_ROOT+"\img\placa.jpg")
+
         if img is None:
             return HttpResponse("none")
-        return HttpResponse("gaaa")
-        #cv2.imshow('image',img)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        #plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
 
         bfilter = cv2.bilateralFilter(gray, 11, 17, 17) #Noise reduction
         edged = cv2.Canny(bfilter, 30, 200) #Edge detection
-        #plt.imshow(cv2.cvtColor(edged, cv2.COLOR_BGR2RGB))
 
         keypoints = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(keypoints)

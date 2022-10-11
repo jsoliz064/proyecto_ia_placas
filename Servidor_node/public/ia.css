@@ -1,0 +1,72 @@
+.menu {
+    position: absolute;
+    margin: auto;
+    top: 19%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 500px;
+    height: 430px;
+    border: 1px solid red;
+    border-radius: 5px;
+}
+.captura{
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.estilo {
+    margin-top: 12%;
+    width: 600;
+    height: 440;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 9;
+    border: 1px solid red;
+    border-radius: 5px;
+}
+@media screen and (min-width: 260px) {
+    .menu {
+        width: 200px;
+        height: 130px;
+    }
+
+}
+
+@media screen and (min-width: 350px) {
+    .menu {
+        width: 300px;
+        height: 230px;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .menu {
+        width: 400px;
+        height: 330px;
+    }
+   
+}
+
+@media screen and (min-width: 600px) {
+    .menu {
+        width: 400px;
+        height: 330px;
+    }
+
+}
+
+@media screen and (min-width: 650px) {
+    .menu {
+        width: 450px;
+        height: 380px;
+    }
+}

@@ -5,4 +5,4 @@ from .models import Documento
 class DocumentoForm(ModelForm):
     class Meta:
         model=Documento
-        fields = ['imagen']
+        fields = ['documento']
