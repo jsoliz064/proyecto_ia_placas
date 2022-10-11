@@ -8,11 +8,30 @@ var canvasRef = document.getElementById("cvref");
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var currentStream = null;
-var facingMode = "user";
 var modelo = null;
 let may = 0;
 let smay = 0;
-let socket=io();
+let socket = io();
+
+/* let cimg = document.getElementById('canvasimg');
+let ctximg = cimg.getContext('2d');
+let img = new Image();   // Create new img element
+img.src = './img/placa1.jpeg';
+img.onload = () => {
+    ctximg.drawImage(img, 0, 0, 200, 200);
+
+    var base64String = "";
+
+    var file = img
+    var reader = new FileReader();
+    reader.onload = function () {
+        base64String = reader.result.replace("data:", "")
+            .replace(/^.+,/, "");
+        imageBase64Stringsep = base64String;
+        reader.readAsDataURL(file);
+    }
+    console.log(base64String)
+} */
 
 (async () => {
     console.log("Cargando modelo...");
@@ -141,27 +160,28 @@ const drawRect = (boxes, classes, scores, threshold, imgWidth, imgHeight, ctx2) 
             ctx2.rect(cx, cy, w - 10, h,);
             ctx2.stroke()
             smay += 1
-            if (smay == 15) {
-                //download_img()
+            if (smay == 50) {
                 upload()
-                //send()
                 smay = 0
                 may = 0
             }
-            if (Math.round(scores[i] * 100) / 100 > may) {
+            if (Math.round(scores[i] * 100) / 100 > may && smay!=0) {
                 canvas.width = w;
                 canvas.height = h;
                 canvas.style = "border:2px solid blue;"
-                ctx.drawImage(video, cx, cy, w, h, 0, 0, w, h);
+                ctx.drawImage(video, cx-50, cy-50, w+100, h+100, 0, 0, w, h);
                 may = Math.round(scores[i] * 100) / 100;
             }
         }
     }
 }
 function upload() {
-    const base64=canvas.toDataURL();
-    console.log(base64)
-    socket.emit('upload',base64);
+    const canvas2=document.getElementById("canvas")
+    const base64 = canvas2.toDataURL("image/png")
+    const width=canvas2.width
+    const height=canvas2.height
+    socket.emit('upload', base64,width,height)
+    console.log("uploaded")
 }
 
 download_img = function () {
@@ -169,17 +189,14 @@ download_img = function () {
     // Create an anchor, and set the href value to our data URL
     const createEl = document.createElement('a');
     createEl.href = canvasUrl;
-
     // This is the name of our downloaded file
     createEl.download = "download-this-canvas";
-
     // Click the download button, causing a download, and then remove it
     createEl.click();
     createEl.remove();
 };
 function agregar() {
     console.log("send")
-
     let fd = new FormData();
     fd.append("documento", canvas.toDataURL());
     fetch('/api/placas/upload', {
@@ -191,6 +208,10 @@ function agregar() {
             console.log(datos)
         })
 }
+
+socket.on('response', (response) => {
+    document.getElementById("result").innerHTML = response
+})
 
 
 

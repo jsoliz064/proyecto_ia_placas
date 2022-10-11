@@ -29,18 +29,21 @@ class Upload(View):
         return HttpResponse("index")
 
     def post(self,request):
+        #print(request.FILES)
+
         formulario = DocumentoForm(request.POST,files=request.FILES)
         if formulario.is_valid():
             formulario.save()
-            print('guarded')
+            print('cargado')
         else:
-            print('failed')
+            print('error form multipart')
             return HttpResponse("none")
 
         img = cv2.imread(settings.MEDIA_ROOT+"\img\placa.jpg")
+        #img = cv2.imread(settings.MEDIA_ROOT+"\img\placa.jpg")
 
         if img is None:
-            print('imag not found')
+            print('image not found')
             return HttpResponse("none")
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -77,11 +80,12 @@ class Upload(View):
             result = reader.readtext(cropped_image)
             for result in result:
                 res=result[-2]
-                if len(res)>=7:
+                if len(res)>3:
                     text=res
             #text = result[2][-2]
 
         if text:
+            print(text)
             return HttpResponse(text)
         else:
             return HttpResponse("none")
