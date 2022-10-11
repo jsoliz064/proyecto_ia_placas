@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-//const { socketController } = require('../sockets/controller');
+const { socketController } = require('../sockets/controller');
 const flash = require('connect-flash');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session');
@@ -16,7 +16,7 @@ class Server {
         this.app  = express();
         this.port = process.env.PORT;
         this.server = require('http').createServer( this.app );
-        //this.io     = require('socket.io')( this.server );
+        this.io     = require('socket.io')( this.server );
         this.paths = {
             admin:   '/api/placas',
         }
@@ -59,7 +59,7 @@ class Server {
         this.app.use( this.paths.admin, require('../controllers/placas'));
     }
     sockets() {
-        //this.io.on('connection', ( socket ) => socketController(socket, this.io ) )
+        this.io.on('connection', ( socket ) => socketController(socket, this.io ) )
     }
 
     listen() {

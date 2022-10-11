@@ -10,8 +10,9 @@ var ctx = canvas.getContext("2d");
 var currentStream = null;
 var facingMode = "user";
 var modelo = null;
-let may=0;
-let smay=0;
+let may = 0;
+let smay = 0;
+let socket=io();
 
 (async () => {
     console.log("Cargando modelo...");
@@ -57,6 +58,16 @@ function procesarCamara() {
     ctx.drawImage(video, 0, 0, tamano, tamano, 0, 0, tamano, tamano);
     //setTimeout(procesarCamara, 1000);
 }
+socket.on('connect', () => {
+    console.log("connected")
+});
+
+socket.on('disconnect', () => {
+    console.log('Se ha perdido la conexion');
+});
+
+
+
 
 
 const detect = async (net) => {
@@ -89,7 +100,7 @@ const detect = async (net) => {
         // drawSomething(obj, ctx)  
 
         drawRect(boxes[0], classes[0], scores[0], 0.5, videoWidth, videoHeight, ctx2);
-        
+
         tf.dispose(img)
         tf.dispose(resized)
         tf.dispose(casted)
@@ -104,7 +115,7 @@ const labelMap = {
 
 // Define a drawing function
 const drawRect = (boxes, classes, scores, threshold, imgWidth, imgHeight, ctx2) => {
-    
+
     for (let i = 0; i <= boxes.length; i++) {
         if (boxes[i] && classes[i] && scores[i] > threshold) {
             // Extract variables
@@ -121,33 +132,39 @@ const drawRect = (boxes, classes, scores, threshold, imgWidth, imgHeight, ctx2) 
             ctx2.beginPath()
             //ctx2.fillText(labelMap[text]['name'] + ' - ' + Math.round(scores[i] * 100) / 100, x * imgWidth, y * imgHeight - 20)
             ctx2.fillText(labelMap[text]['name'], x * imgWidth, y * imgHeight - 20)
-            
-            const w=(width - x) * imgWidth + 10;
-            const h=(height - y) * imgHeight + 10;
-            const cx=x * imgWidth - 10;
-            const cy= y * imgHeight - 10;
 
-            ctx2.rect(cx,cy,w-10,h,);
+            const w = (width - x) * imgWidth + 10;
+            const h = (height - y) * imgHeight + 10;
+            const cx = x * imgWidth - 10;
+            const cy = y * imgHeight - 10;
+
+            ctx2.rect(cx, cy, w - 10, h,);
             ctx2.stroke()
-            smay+=1
-            if (smay==50){
-                download_img()
-                smay=0
-                may=0
+            smay += 1
+            if (smay == 15) {
+                //download_img()
+                upload()
+                //send()
+                smay = 0
+                may = 0
             }
-            if (Math.round(scores[i] * 100) / 100>may){
-                canvas.width=w;
-                canvas.height=h;
-                canvas.style="border:2px solid blue;"
-                ctx.drawImage(video,cx,cy,w,h,0,0,w,h);
-                may=Math.round(scores[i] * 100) / 100;
+            if (Math.round(scores[i] * 100) / 100 > may) {
+                canvas.width = w;
+                canvas.height = h;
+                canvas.style = "border:2px solid blue;"
+                ctx.drawImage(video, cx, cy, w, h, 0, 0, w, h);
+                may = Math.round(scores[i] * 100) / 100;
             }
         }
     }
 }
+function upload() {
+    const base64=canvas.toDataURL();
+    console.log(base64)
+    socket.emit('upload',base64);
+}
 
-
-download_img = function() {
+download_img = function () {
     let canvasUrl = canvas.toDataURL();
     // Create an anchor, and set the href value to our data URL
     const createEl = document.createElement('a');
@@ -159,4 +176,21 @@ download_img = function() {
     // Click the download button, causing a download, and then remove it
     createEl.click();
     createEl.remove();
-  };
+};
+function agregar() {
+    console.log("send")
+
+    let fd = new FormData();
+    fd.append("documento", canvas.toDataURL());
+    fetch('/api/placas/upload', {
+        method: 'POST',
+        body: fd
+    })
+        .then(response => console.log(response))
+        .then(datos => {
+            console.log(datos)
+        })
+}
+
+
+

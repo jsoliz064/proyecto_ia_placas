@@ -29,14 +29,18 @@ class Upload(View):
         return HttpResponse("index")
 
     def post(self,request):
-
         formulario = DocumentoForm(request.POST,files=request.FILES)
         if formulario.is_valid():
             formulario.save()
+            print('guarded')
+        else:
+            print('failed')
+            return HttpResponse("none")
 
         img = cv2.imread(settings.MEDIA_ROOT+"\img\placa.jpg")
 
         if img is None:
+            print('imag not found')
             return HttpResponse("none")
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
