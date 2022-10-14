@@ -2,7 +2,8 @@
 CREATE TABLE placas (
   id INT(11) auto_increment NOT NULL, 
   PRIMARY KEY (id),
-  nombre VARCHAR(10)
+  nombre VARCHAR(10),
+  tipo boolean NOT NULL,
 );
 
 /* CREATE TABLE placas (

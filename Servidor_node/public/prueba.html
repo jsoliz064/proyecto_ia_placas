@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Canvas ↔ ArrayBuffer</h1>
+
+    <h2>1. Source <code>&lt;img&gt;</code></h2>
+    <img id="image-in" src="https://fiddle.jshell.net/img/logo.png">
+
+    <h2>2. Canvas</h2>
+    <canvas id="canvas"></canvas>
+
+    <h2>3. ImageData</h2>
+    <p id="imagedata-byte-length"></p>
+
+    <h2>4. ArrayBuffer</h2>
+    <p id="arraybuffer-byte-length"></p>
+
+    <h2>5. Final <code>&lt;img&gt;</code></h2>
+    <img id="image-out">
+    <script>
+        const imageIn = document.querySelector('#image-in');
+        const imageOut = document.querySelector('#image-out');
+        const canvas = document.querySelector('#canvas');
+        const imageDataByteLen = document.querySelector('#imagedata-byte-length');
+        const bufferByteLen = document.querySelector('#arraybuffer-byte-length');
+
+        const mimeType = 'image/png';
+
+        imageIn.addEventListener('load', () => {
+
+            // Draw image to canvas.
+            canvas.width = imageIn.width;
+            canvas.height = imageIn.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imageIn, 0, 0);
+
+            // Convert canvas to ImageData.
+            const imageData = ctx.getImageData(0, 0, imageIn.width, imageIn.height);
+            imageDataByteLen.textContent = imageData.data.byteLength + ' bytes.';
+
+            // Convert canvas to Blob, then Blob to ArrayBuffer.
+            canvas.toBlob((blob) => {
+                const reader = new FileReader();
+                reader.addEventListener('loadend', () => {
+                    const arrayBuffer = reader.result;
+                    bufferByteLen.textContent = arrayBuffer.byteLength + ' bytes.';
+
+                    // Dispay Blob content in an Image.
+                    const blob = new Blob([arrayBuffer], { type: mimeType });
+                    imageOut.src = URL.createObjectURL(blob);
+                });
+                reader.readAsArrayBuffer(blob);
+            }, mimeType);
+
+        });
+    </script>
+</body>
+
+</html>

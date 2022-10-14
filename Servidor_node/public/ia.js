@@ -160,7 +160,7 @@ const drawRect = (boxes, classes, scores, threshold, imgWidth, imgHeight, ctx2) 
             ctx2.rect(cx, cy, w - 10, h,);
             ctx2.stroke()
             smay += 1
-            if (smay == 50) {
+            if (smay == 20) {
                 upload()
                 smay = 0
                 may = 0
@@ -178,6 +178,7 @@ const drawRect = (boxes, classes, scores, threshold, imgWidth, imgHeight, ctx2) 
 function upload() {
     const canvas2=document.getElementById("canvas")
     const base64 = canvas2.toDataURL("image/png")
+
     const width=canvas2.width
     const height=canvas2.height
     socket.emit('upload', base64,width,height)
@@ -197,10 +198,25 @@ download_img = function () {
 };
 function agregar() {
     console.log("send")
+    data={
+        description: 'documento',
+        public: true,
+        files: {
+          'documento.png': {
+            content: canvas.toDataURL("image/png")
+          }
+        }
+      }
     let fd = new FormData();
-    fd.append("documento", canvas.toDataURL());
-    fetch('/api/placas/upload', {
+    fd.append('documento', canvas.toDataURL("image/png"));
+
+    fetch('http://127.0.0.1:8000/api/predecir', {
         method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         body: fd
     })
         .then(response => console.log(response))
